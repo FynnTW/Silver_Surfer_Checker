@@ -208,12 +208,12 @@ try:
                     break
                 except UnicodeDecodeError:
                     continue   
-
             outputfile = open(outputfilename, 'w') 
             file_bmdb = open(bmdbname, 'r', encoding='utf8')
             file_edb = open(edbname, 'r', encoding='utf8')
             file_smfactions = open(smfactionsname, 'r', encoding='utf8')
 
+            file_smfactions.seek(0)
             for line in file_smfactions:
                 if re.search(r'^;', line) is not None:
                     continue
@@ -228,6 +228,7 @@ try:
                         culturelist.append(sm_culture)
                     culturedict[sm_culture].append(sm_faction.strip())
 
+            file_bmdb.seek(0)
             for line in file_bmdb:
                 if re.search(r'\d+\s*([:A-z:].+?)\n', line) is not None and re.search(r'\d+\s*blank', line) is None and re.search(r'\d+\s*serialization::archive\s', line) is None and re.search(r'\.spr', line) is None and re.search(r'\.mesh', line) is None and re.search(r'\.texture', line) is None:
                     modelentrystr = re.findall(r'\d+\s*([:A-z:].+?)\n', line)[0].strip()
@@ -262,6 +263,7 @@ try:
 
             culturedict['all'] = globalfactionlist
 
+            file_edu.seek(0)
             for line in file_edu:
                 if re.search(r'^;', line) is not None:
                     continue
@@ -295,6 +297,7 @@ try:
                         if upgmodel.strip() not in upgmodel_dict[edu_unit]:
                             upgmodel_dict[edu_unit].append(upgmodel.strip().lower())
 
+            mounts.seek(0)
             for line in mounts:
                 if re.search(r'^;', line) is not None:
                     continue
@@ -309,6 +312,7 @@ try:
 
             rp_faction_list = []
             edbline = 0
+            file_edb.seek(0)
             for line in file_edb:
                 edbline += 1
                 if re.search(r'^;', line) is not None:
@@ -331,6 +335,7 @@ try:
             searchunit = 0
             has_battle_model = 0
             generalunit = 0
+            file_cs.seek(0)
             for line in file_cs:
                 linecs += 1
                 if re.search(r'^;', line) is not None:
@@ -364,6 +369,7 @@ try:
 
             lineds = 0
             has_battle_model = 0
+            file_ds.seek(0)
             for line in file_ds:
                 lineds += 1
                 if re.search(r'^;', line) is not None:
@@ -387,13 +393,18 @@ try:
                         CheckSilverSurfer(ds_unit.strip(), faction_ds.strip(), 'descr_strat', lineds, general_model.strip().lower(), 'faction')
                     CheckSilverSurfer(ds_unit.strip(), faction_ds.strip(), 'descr_strat', lineds, 'unit', 'faction')
                     generalunit = 0
+
         outputfile.flush()
         outputfile.close()
+        break
+
         
 except Exception as e:
     tb = traceback.format_exc()
     sg.Print(f'An error happened.  Here is the info:', e, tb)
     sg.popup_error(f'AN EXCEPTION OCCURRED!', e, tb)
+
+
 
 
 
